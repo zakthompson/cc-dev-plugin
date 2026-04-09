@@ -1,0 +1,9 @@
+{
+  "plugins": [
+    {
+      "name": "cc-dev-plugin",
+      "description": "Feature development workflow with markdown handoff between agents, Opus for reasoning and Sonnet for execution",
+      "version": "0.1.0"
+    }
+  ]
+}
