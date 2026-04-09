@@ -1,9 +1,16 @@
 {
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "zakthompson-marketplace",
+  "description": "zakthompson's personal claude-code plugins",
+  "owner": {
+    "name": "Zak Thompson",
+    "email": "zak@fireinsidestudios.com"
+  },
   "plugins": [
     {
       "name": "cc-dev-plugin",
       "description": "Feature development workflow with markdown handoff between agents, Opus for reasoning and Sonnet for execution",
-      "version": "0.1.0"
+      "source": "."
     }
   ]
 }
