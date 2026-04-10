@@ -16,6 +16,25 @@ Read `.claude/handoff/ARCHITECTURE.md` if it exists -- it contains the intended 
 
 By default, review unstaged changes from `git diff`. The user may specify different files or scope to review.
 
+## Iterative Review Context
+
+If `.claude/handoff/REVIEW.md` exists from a prior review iteration, read it. Issues that were previously raised and explicitly justified as "won't fix" by the architect (documented in `.claude/handoff/REVIEW_RESPONSE.md`) should be accepted -- do not re-flag them. Focus only on **new** issues or issues that were supposed to be fixed but weren't.
+
+It is a valid and expected outcome to find no issues. If the code meets standards, say so clearly and concisely. Do not manufacture issues to justify your review.
+
+## Exploratory Testing
+
+If you have access to Playwright MCP tools (look for tools prefixed with `mcp__plugin_playwright_playwright__`), you should include **exploratory testing** as part of your review when the changes involve user-facing behavior (UI, API endpoints, interactive features).
+
+When exploratory testing:
+- **Be antagonistic.** Your goal is to break things. Try unexpected inputs, rapid interactions, edge cases, boundary values, and uncommon user flows.
+- Test error states: what happens with empty inputs, extremely long inputs, special characters, concurrent actions?
+- Test navigation edge cases: back button, refresh mid-action, deep linking.
+- Verify the happy path works, then systematically try to expose failure points.
+- Document any failures with clear reproduction steps.
+
+If Playwright tools are not available, skip exploratory testing and focus on static code review only.
+
 ## Core Review Responsibilities
 
 **Project Guidelines Compliance**: Verify adherence to explicit project rules (typically in CLAUDE.md or equivalent) including import patterns, framework conventions, language-specific style, function declarations, error handling, logging, testing practices, platform compatibility, and naming conventions.

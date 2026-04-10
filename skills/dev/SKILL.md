@@ -130,11 +130,10 @@ Initial request: $ARGUMENTS
 
 **Goal**: Build the feature.
 
-**DO NOT START WITHOUT USER APPROVAL.**
+**The user's selection of an architecture approach in Phase 4 constitutes approval to proceed with implementation. Do not ask again whether to begin building.**
 
 **Actions**:
-1. Wait for explicit user approval.
-2. Launch one or more code-builder agents. Each agent:
+1. Launch one or more code-builder agents. Each agent:
    - Reads `.claude/handoff/ARCHITECTURE.md` as its primary directive
    - Reads `.claude/handoff/EXPLORATION.md` for codebase context
    - Implements the specified changes following the build sequence
@@ -147,25 +146,53 @@ Initial request: $ARGUMENTS
 
 ---
 
-## Phase 6: Quality Review
+## Phase 6: Quality Review Loop
 
-**Goal**: Ensure code is simple, DRY, elegant, easy to read, and functionally correct.
+**Goal**: Iteratively review, plan fixes, and rebuild until the implementation meets quality standards.
 
-**Actions**:
+This phase is a loop. It continues until reviewers have no remaining issues to report. The loop proceeds as: **Review → Architect response → Build fixes → Review again**.
+
+### Loop Step 1: Review
+
 1. Launch 3 code-reviewer agents in parallel with different focuses:
    - Simplicity / DRY / elegance
    - Bugs / functional correctness
    - Project conventions / abstractions
 
    **Each reviewer should read `.claude/handoff/ARCHITECTURE.md`** to understand the intended design, so they can review against intent, not just style.
+   **Each reviewer should also read `.claude/handoff/REVIEW.md`** if it exists from a prior iteration, so they understand what issues have already been raised and addressed (including issues the architect explicitly justified not fixing -- reviewers must accept these justifications and not re-flag them).
 
-2. Consolidate findings and identify highest severity issues that you recommend fixing.
-3. Write `.claude/handoff/REVIEW.md` with:
-   - All findings organized by severity
-   - Recommended fixes
-   - Issues deferred or accepted
-4. **Present findings to user and ask what they want to do** (fix now, fix later, or proceed as-is).
-5. Address issues based on user decision (launch code-builder agents if fixes are needed).
+2. Consolidate findings across all reviewers.
+3. Write/update `.claude/handoff/REVIEW.md` with:
+   - Iteration number
+   - All new findings organized by severity
+   - History of prior iterations' findings and resolutions
+
+4. **If reviewers found no new issues**: The loop is complete. It is expected and acceptable for reviewers to find no issues -- this is the successful exit condition. Proceed to Phase 7.
+
+5. **If issues were found**: Continue to Loop Step 2.
+
+### Loop Step 2: Architect Response
+
+1. Launch a code-architect agent to review the findings in `.claude/handoff/REVIEW.md`.
+   - The architect reads REVIEW.md, ARCHITECTURE.md, and EXPLORATION.md for full context.
+   - For each finding, the architect decides: **fix it** (with a concrete plan) or **justify not fixing it** (with a clear rationale).
+   - The architect must not dismiss issues without justification. Every "won't fix" must include reasoning that a reviewer would accept.
+
+2. Write `.claude/handoff/REVIEW_RESPONSE.md` with:
+   - Iteration number
+   - For each finding: action (fix or won't fix) and rationale
+   - Implementation plan for fixes (files to modify, specific changes)
+   - Justifications for any deferred/declined items
+
+### Loop Step 3: Build Fixes
+
+1. Launch one or more code-builder agents to implement the fixes specified in `REVIEW_RESPONSE.md`.
+   - Builders read REVIEW_RESPONSE.md as their primary directive for this iteration.
+   - Builders also read ARCHITECTURE.md and EXPLORATION.md for context.
+2. Update `.claude/handoff/IMPLEMENTATION.md` with the fixes applied.
+
+3. Return to **Loop Step 1** for the next review iteration.
 
 ---
 
@@ -179,5 +206,7 @@ Initial request: $ARGUMENTS
    - What was built
    - Key decisions made
    - Files modified
+   - Review iterations: how many rounds, key issues found and resolved
    - Suggested next steps
 3. Present the summary to the user.
+4. Clean up handoff files: `rm -rf .claude/handoff/`
